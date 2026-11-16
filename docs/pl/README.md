@@ -1,22 +1,47 @@
 # Tłumacz Modów dla Project Zomboid
 
+<p align="center">
+  <a href="#features">Funkcje</a> ·
+  <a href="#requirements">Wymagania</a> ·
+  <a href="#configuration-configjson">Konfiguracja</a> ·
+  <a href="#usage">Zastosowanie</a> ·
+  <a href="#jak-to-działa">Jak to działa</a>
+</p>
+
+<p align="center">
+  <b>Angielski</b> ·
+  <a href="docs/ru/README.md">Русский</a> ·
+  <a href="docs/zh/README.md">简体中文</a> ·
+  <a href="docs/zh-TW/README.md">繁體中文</a> ·
+  <a href="docs/ja/README.md">日本語</a> ·
+  <a href="docs/ko/README.md">한국어</a> ·
+  <a href="docs/de/README.md">Deutsch</a> ·
+  <a href="docs/fr/README.md">Français</a> ·
+  <a href="docs/es/README.md">Español</a> ·
+  <a href="docs/it/README.md">Italiano</a> ·
+  <a href="docs/pt-BR/README.md">Portugalski</a> ·
+  <a href="docs/tr/README.md">Türkçe</a> ·
+  <a href="docs/uk/README.md">Українська</a> ·
+  <a href="docs/pl/README.md">Polski</a>
+</p>
+
 Narzędzie wiersza poleceń do lokalizacji modów dla **Project Zomboid (wersja 42.15+)** przy użyciu lokalnego serwera `llama.cpp` (`llama-server`), zasilanego przez **TranslateGemma**.
 
-Skanuje Steam Workshop lub lokalne foldery z modami w poszukiwaniu plików `Translate/EN/*.json`, szacuje ilość tłumaczeń (liczba wierszy i znaków), tłumaczy brakujące lub zaktualizowane ciągi znaków oraz tworzy lokalne kopie wszystkich wygenerowanych tłumaczeń, dzięki czemu można łatwo pakować samodzielne mody z tłumaczeniami lub przywracać pliki po aktualizacjach Steam.
+Skanuje Steam Workshop lub lokalne foldery z modami w poszukiwaniu plików `Translate/EN/*.json`, szacuje ilość tłumaczeń (liczba wierszy i znaków), tłumaczy brakujące lub zaktualizowane ciągi znaków i tworzy lokalne kopie wszystkich wygenerowanych tłumaczeń, dzięki czemu można łatwo pakować samodzielne mody z tłumaczeniami lub przywracać pliki po aktualizacjach Steam.
 
 ---
 
 ## Funkcje
 
-- **Obsługa JSON w wersji 42.15+:** Działa z nowoczesnym formatem `.json` tłumaczeń używanym w Project Zomboid B42.15+ (starsze mody w formacie `.txt` są bezpiecznie pomijane podczas skanowania).
+- **Obsługa JSON w wersji 42.15+:** Działa z nowoczesnym formatem `.json` używanym w Project Zomboid B42.15+ (starsze mody w formacie `.txt` są bezpiecznie pomijane podczas skanowania).
 - **Bogaty interfejs terminala:** Czyste, kolorowe tabele, znaczniki statusu oraz dynamiczne paski postępu z czasem upływającym/pozostałym, dzięki bibliotece `rich`.
 - **Wielojęzyczna linia poleceń (CLI) (`i18n`):** Domyślnie ustawiona na język angielski, a podczas interaktywnego uruchamiania, użytkownik jest proszony o wybranie języka interfejsu z plików `cli_locales/*.json`.
 - **3 Tryby pracy:**
   - **Tryb 1:** Przetłumaczenie pojedynczego, określonego modułu (lub jego folderu `Translate` / `EN`).
   - **Tryb 2:** Przeskanuj cały katalog Twojego workshopu, sprawdź status tłumaczenia i ilość znaków na mod, a następnie wybierz mody za pomocą numerów (`1,3,5`), zakresów (`1-4`) lub słowa kluczowego `all`.
-  - **Tryb 3:** Zarządzanie zapisanym postępem — wykrywanie aktualizacji modów, tłumaczenie tylko nowych/zmodyfikowanych ciągów, ponowne tworzenie od początku, przywracanie z kopii, lub czyste usuwanie wygenerowanych plików.
-- **Wykrywanie zmian i śledzenie postępów:** Przechowuje hasze SHA-1 dla poszczególnych kluczy w języku angielskim w pliku `pz_translator_state.json`. Jeśli mod jest aktualizowany w Steam Workshop, tylko nowe lub zmodyfikowane klucze w języku angielskim są kolejkowane do tłumaczenia.
-- **Lokalna kopia (`pz_translator_mods/`):** Zapisuje kopię każdego przetłumaczonego pliku, zachowując strukturę katalogów (co ułatwia tworzenie samodzielnych modów zawierających tylko tłumaczenia).
+  - **Tryb 3:** Zarządzanie zapisanym postępem — wykrywanie aktualizacji modyfikacji, tłumaczenie tylko nowych/zmodyfikowanych ciągów, ponowne tworzenie od początku, przywracanie z kopii, lub czyste usuwanie wygenerowanych plików.
+- **Wykrywanie zmian i śledzenie postępów:** Przechowuje hasze SHA-1 dla każdego klucza w języku angielskim w pliku `pz_translator_state.json`. Jeśli mod jest aktualizowany w Steam Workshop, tylko nowe lub zmodyfikowane klucze w języku angielskim są kolejkowane do tłumaczenia.
+- **Lokalna kopia (`pz_translator_mods/`):** Zapisuje kopię każdego przetłumaczonego pliku, zachowując względną strukturę katalogów (co ułatwia tworzenie samodzielnych modów zawierających tylko tłumaczenia).
 - **Bezpieczne i odporne na awarie:**
   - Istniejące tłumaczenia autorów z `0` oczekującymi kluczami nigdy nie są modyfikowane, nadpisywane ani śledzone.
   - Obsługuje nagłówek UTF-8, przecinki na końcu plików JSON modyfikowanych ręcznie, oraz zachowuje `$schema` i puste ciągi znaków.
@@ -55,12 +80,10 @@ Przy pierwszym uruchomieniu (lub za pomocą wbudowanego pliku `config.json`), sk
 ```
 
 | Klucz | Opis |
-| ---
---- | ---
---- |
-| `llamacpp_host` | Adres hosta Twojego działającego `llama-server` |
-| `llamacpp_port` | Port, na którym działa `llama-server`. |
-| `ścieżka_do_modów` | Domyślny katalog główny przeskanowany w trybie 2 (np. folder `108600` w Steam Workshop) |
+| --- | --- |
+| `llamacpp_host` | Adres hosta dla uruchomionego serwera `llama-server` |
+| `llamacpp_port` | Port, na którym działa Twój serwer `llama-server` |
+| `mods_path` | Domyślny katalog główny przeskanowany w trybie 2 (np. folder `108600` w Steam Workshop) |
 | `default_source_lang` | Nazwa folderu z tłumaczeniami (domyślnie: `EN`) |
 | `default_target_lang` | Domyślny kod języka docelowego (np. `RU`, `DE`, `CN`, `JP`, `PTBR`) |
 | `ui_lang` | Domyślny kod języka interfejsu z katalogu `cli_locales/` |
@@ -93,9 +116,7 @@ python pz_translate.py
 Można ominąć interaktywne menu, używając flag CLI (argumenty CLI nadpisują `config.json`):
 
 | Flaga | Opis |
-| ---
---- | ---
---- |
+| --- | --- |
 | `--config <ścieżka>` | Ścieżka do pliku `config.json` o niestandardowej konfiguracji |
 | `--mode {1, 2, 3}` | `1` = pojedynczy mod, `2` = skanowanie katalogu, `3` = zarządzanie zapisanym postępem |
 | `--path <ścieżka>` | Ścieżka do folderu z modami (Tryb 1) lub głównego folderu z modami (Tryb 2) |
@@ -126,11 +147,11 @@ python pz_translate.py --mode 3
 
 ## Jak to działa
 
-1. **Odkrywanie Modów:** Rekurencyjnie przeszukuje katalogi `Translate/<SOURCE_LANG>`, które zawierają pliki `.json`, i wyodrębnia nazwy modów z plików `mod.info` oraz struktur folderów Workshop (`mods/<ModName>/<Version>`).
-2. **Porównywanie i szacowanie objętości:** Porównuje klucze w `EN/*.json` z istniejącymi plikami docelowymi (`<TARGET_LANG>/*.json`) oraz przechowywanymi hashami SHA-1 w pliku `pz_translator_state.json`. Tylko brakujące klucze lub klucze, których tekst źródłowy w języku angielskim uległ zmianie od ostatniego tłumaczenia, są kolejkowane.
+1. **Wykrywanie modów:** Rekurencyjnie przeszukuje katalogi `Translate/<SOURCE_LANG>`, które zawierają pliki `.json`, i wyodrębnia nazwy modów z plików `mod.info` oraz struktur folderów Workshop (`mods/<ModName>/<Version>`).
+2. **Porównywanie i szacowanie objętości:** Porównuje klucze w `EN/*.json` z istniejącymi plikami docelowymi (`<TARGET_LANG>/*.json`) oraz przechowywanymi hashami SHA-1 w pliku `pz_translator_state.json`. Tylko brakujące klucze lub klucze, których tekst źródłowy w języku angielskim uległ zmianie od ostatniej transkrypcji, są dodawane do kolejki.
 3. **Tłumaczenie LLM:** Wysyła każdą ciąg znaków do `http://<host>:<port>/completion` używając formatowania rozmowy w TranslateGemma.
-4. **Dwuwyjściowe:** Każde pole `save_every` (oraz po zakończeniu lub przy użyciu `Ctrl+C`), zapisuje poprawny JSON w formacie UTF-8 do:
-   - Folder docelowy dla modyfikacji: `...\Translate\<LANG>\<file>.json`
+4. **Dwuwyjściowe:** Każdy klucz `save_every` (oraz po zakończeniu lub przy użyciu `Ctrl+C`), zapisuje poprawny JSON w formacie UTF-8 do:
+   - Folder docelowy dla modyfikacji: `...\Translate\<LANG>\<plik>.json`
    - Lokalny folder lustrzany: `pz_translator_mods\<pełna_ścieżka_bez_litery_dysku>\Translate\<JĘZYK>\<plik>.json`
 
 ---

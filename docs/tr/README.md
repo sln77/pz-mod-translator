@@ -1,25 +1,50 @@
 # Proje Zomboid Mod Çevirmeni
 
+<p align="center">
+  <a href="#features">Özellikler</a> ·
+  <a href="#requirements">Gereksinimler</a> ·
+  <a href="#configuration-configjson">Yapılandırma</a> ·
+  <a href="#usage">Kullanım</a> ·
+  <a href="#how-it-works">Nasıl Çalışır</a>
+</p>
+
+<p align="center">
+  <b>İngilizce</b> ·
+  <a href="docs/ru/README.md">Rusça</a> ·
+  <a href="docs/zh/README.md">Basitleştirilmiş Çince</a> ·
+  <a href="docs/zh-TW/README.md">繁體中文</a> ·
+  <a href="docs/ja/README.md">Japonca</a> ·
+  <a href="docs/ko/README.md">한국어</a> ·
+  <a href="docs/de/README.md">Almanca</a> ·
+  <a href="docs/fr/README.md">Fransızca</a> ·
+  <a href="docs/es/README.md">Español</a> ·
+  <a href="docs/it/README.md">İtalyanca</a> ·
+  <a href="docs/pt-BR/README.md">Portekizce</a> ·
+  <a href="docs/tr/README.md">Türkçe</a> ·
+  <a href="docs/uk/README.md">Ukraynaca</a> ·
+  <a href="docs/pl/README.md">Polski</a>
+</p>
+
 Yerel bir `llama.cpp` sunucusu (`llama-server`) ile çalışan ve **TranslateGemma** tarafından desteklenen, **Project Zomboid (Build 42.15+)** modlarını yerelleştirmek için kullanılan bir komut satırı aracı.
 
-Bu, Steam Workshop veya yerel mod klasörlerinde `Translate/EN/*.json` dosyalarını tarar, çeviri hacmini (satır ve karakter sayısı) tahmin eder, eksik veya güncellenmiş metinleri çevirir ve oluşturulan her çeviriyi yerel olarak yansıtır, böylece bağımsız çeviri modlarını kolayca paketleyebilir veya Steam güncellemeleri sonrasında dosyaları geri yükleyebilirsiniz.
+Bu, Steam Workshop veya yerel mod klasörlerinde `Translate/EN/*.json` dosyalarını tarar, çeviri hacmini (satır ve karakter sayısı) tahmin eder, eksik veya güncellenmiş metinleri çevirir ve oluşturulan her çeviriyi yerel olarak yansıtarak, bağımsız çeviri modlarını kolayca paketlemenize veya Steam güncellemeleri sonrasında dosyaları geri yüklemenize olanak tanır.
 
 ---
 
 ## Özellikler
 
 - **42.15+ JSON Desteği:** Project Zomboid B42.15+ tarafından kullanılan modern `.json` çeviri formatıyla çalışır (eski `.txt` formatındaki modlar, tarama sırasında güvenli bir şekilde atlanır).
-- **Zengin Terminal Arayüzü:** Temiz, renkli tablolar, durum simgeleri ve `rich` ile elde edilen, geçen/kalan süreye göre canlı ilerleme çubukları.
+- **Zengin Terminal Arayüzü:** Temiz, renkli tablolar, durum simgeleri ve `rich` kullanarak geçen/kalan süre ile canlı ilerleme çubukları.
 - **Çok dilli komut satırı arayüzü (`i18n`):** Varsayılan olarak İngilizce'ye ayarlanır ve etkileşimli başlatma sırasında `cli_locales/*.json`'dan arayüz dilini seçmek için kullanıcıyı yönlendirir.
 - **3 Çalışma Modu:**
   - **Mod 1:** Belirli bir modu (veya onun `Translate` / `EN` klasörünü) çevirin.
-  - **Mod 2:** Tüm Workshop dizinini tarayın, her mod için çeviri durumunu ve karakter hacmini inceleyin ve modları sayılarla (`1,3,5`), aralıklarla (`1-4`) veya `tüm` olarak seçin.
+  - **Mod 2:** Tüm Workshop dizininizi tarayın, her mod için çeviri durumunu ve karakter hacmini inceleyin ve modları sayılarla (`1,3,5`), aralıklarla (`1-4`) veya `tüm` olarak seçin.
   - **Mod 3:** Kaydedilmiş ilerlemeyi yönet — mod güncellemelerini algıla, yalnızca yeni/değişen dizeyi çevir, baştan yaz, bir yedeğinden geri yükle veya oluşturulan dosyaları temiz bir şekilde sil.
 - **Güncelleme Tespiti ve İlerleme Takibi:** Kaynak İngilizce metinlerin her anahtar için SHA-1 hash'lerini `pz_translator_state.json` dosyasında saklar. Eğer Steam Workshop'ta bir güncelleme yapılırsa, yalnızca yeni eklenen veya değiştirilen İngilizce anahtarlar çeviri için sıraya alınır.
 - **Yerel Yansıma (`pz_translator_mods/`):** Çevrilmiş her dosyanın bir kopyasını kaydeder ve ilgili dizin yapısını korur (bu, bağımsız çeviri odaklı modlar oluşturmayı kolaylaştırır).
 - **Güvenli ve Hata Tolerant:**
-  - Var olan yazar çevirileri, `0` bekleyen anahtar ile birlikteyse, hiçbir şekilde değiştirilmez, üzerine yazılmaz veya izlenmez.
-  - UTF-8 baş bayrağını, elle düzenlenmiş mod JSON dosyalarındaki son virgülleri ve `$schema` ve boş dizeleri işler.
+  - Var olan yazar çevirileri, `0` bekleyen anahtar ile birlikteyse, hiçbir şekilde değiştirilmez, üzerine yazılmaz veya takip edilmez.
+  - UTF-8 BOM, elle düzenlenmiş mod JSON'lardaki sondaki virgülleri ve `$schema` ve boş dizeleri işler.
   - Otomatik olarak ilerlemeyi periyodik olarak kaydeder (`save_every`) ve `Ctrl+C` tuşlarına basıldığında kaydeder.
 
 ---
@@ -56,10 +81,10 @@ pip install -r requirements.txt
 
 | Anahtar | Açıklama |
 | --- | --- |
-| `llamacpp_host` | `llama-server` uygulamanızın ana makine adresi |
-| `llamacpp_port` | Çalışan `llama-server`'ınızın bağlantı noktası |
-| `mods_path` | Varsayılan kök dizini, Mod 2'de (örneğin, Steam Workshop'taki `108600` klasörü) taranmıştır. |
-| `default_kaynak_dil` | Kaynak çeviri klasörünün adı (varsayılan: `EN`) |
+| `llamacpp_host` | Çalışan `llama-server`'ın ana adresi |
+| `llamacpp_port` | `llama-server`'inizin çalıştığı port |
+| `mods_path` | Varsayılan kök dizini, Mod 2'de (örneğin, Steam Workshop `108600` klasörü) taranmıştır. |
+| `default_source_lang` | Kaynak çeviri klasörünün adı (varsayılan: `EN`) |
 | `default_target_lang` | Varsayılan hedef dil kodu (örneğin, `RU`, `DE`, `CN`, `JP`, `PTBR`) |
 | `ui_lang` | Varsayılan arayüz dil kodu, `cli_locales/` dizininden |
 | `mirror_dir` | Yerel klasör, oluşturulan çevirilerin tam yolunu içeren kopyalarının saklandığı yer |
@@ -82,7 +107,7 @@ python pz_translate.py
 2. **Mod Seçimi:**
    - `1` — Belirli bir mod yolunu çevir.
    - `2` — `mods_path` içindeki tüm modları tarayın, string/karakter sayısını gösteren tabloyu görüntüleyin ve mod numaralarını girin (örneğin, `1,3,5`, `1-4` veya `tüm`).
-   - `3` — Kaydedilmiş ilerlemeyi yönet (değişen/yeni anahtarları güncelle, baştan çeviri yap, `pz_translator_mods/`'den geri yükle veya çevirileri sil).
+   - `3` — Kaydedilmiş ilerlemeyi yönet (değişen/yeni anahtarları güncelle, sıfırdan yeniden çeviri yap, `pz_translator_mods/`'den geri yükle veya çevirileri sil).
    - `4` — Arayüz dilini değiştir.
    - `0` — Çıkış.
 
@@ -94,8 +119,8 @@ CLI bayraklarını kullanarak etkileşimli menüyü atlayabilirsiniz (CLI argüm
 | --- | --- |
 | `--config <yol>` | ...config.json... dosyasının yolu |
 | `--mode {1, 2, 3}` | `1` = tek mod, `2` = dizin tarama, `3` = kaydedilmiş ilerlemeyi yönet |
-| `--path <yol>` | Mod klasörüne giden yol (Mod 1) veya modların kök klasörüne giden yol (Mod 2) |
-| `--lang <code>` | Hedef dil, PZ klasör kodu olarak (`RU`, `CN`, `PTBR`) veya ISO kodu olarak (`ru`, `zh`, `pt-BR`) |
+| `--path <yol>` | Mod klasörüne giden yol (Mod 1) veya modların ana klasörüne giden yol (Mod 2) |
+| `--lang <code>` | Hedef dil, bir PZ klasör kodu olarak (`RU`, `CN`, `PTBR`) veya bir ISO kodu olarak (`ru`, `zh`, `pt-BR`) |
 | `--source-lang <code>` | Kaynak dil klasörünü geçersiz kıl (varsayılan: `EN`) |
 | `--host <host>` | `llamacpp_host` değerini geçersiz kıl |
 | `--port <port>` | `llamacpp_port` değerini geçersiz kıl |
@@ -122,10 +147,10 @@ python pz_translate.py --mode 3
 
 ## Nasıl Çalışır
 
-1. **Mod Keşfi:** `Translate/<SOURCE_LANG>` dizinlerini, `.json` dosyalarını içeren ve `mod.info` ve Workshop klasör yapılarından (`mods/<ModName>/<Version>`) mod adlarını çıkaran, yinelemeli bir şekilde arama yapar.
+1. **Mod Keşfi:** `.json` dosyalarını içeren ve `Translate/<SOURCE_LANG>` dizinlerini, aynı zamanda `mod.info` ve Workshop klasör yapılarından (`mods/<ModName>/<Version>`) mod adlarını yinelemeli olarak arar ve çıkarır.
 2. **Fark ve Hacim Tahmini:** `EN/*.json` içindeki anahtarları mevcut hedef dosyalarla (`<TARGET_LANG>/*.json`) ve `pz_translator_state.json`'deki depolanmış SHA-1 hash'leriyle karşılaştırır. Sadece eksik anahtarlar veya İngilizce kaynak metni son çeviriden bu yana değişen anahtarlar sıraya alınır.
 3. **LLM Çevirisi:** Her string'i, `http://<host>:<port>/completion` adresine, TranslateGemma sohbet turu formatlaması kullanarak gönderir.
-4. **Çift Çıktı:** Her `save_every` anahtar (ve tamamlanma veya `Ctrl+C` durumunda), geçerli UTF-8 JSON'ı aşağıdaki konumlara yazar:
+4. **Çift Çıktı:** Her `save_every` anahtar (ve tamamlanma veya `Ctrl+C` durumunda), geçerli UTF-8 JSON'u aşağıdaki konumlara yazar:
    - Hedef mod dizini: `...\Translate\<LANG>\<file>.json`
    - Yerel yansıtma klasörü: `pz_translator_mods\<tam_yol_sürücü_harfi_olmadan>\Translate\<DİL>\<dosya>.json`
 

@@ -1,5 +1,30 @@
 # 프로젝트 좀비 모드 번역가
 
+<p align="center">
+  <a href="#features">특징</a> ·
+  <a href="#requirements">요구 사항</a> ·
+  <a href="#configuration-configjson">설정</a> ·
+  <a> `#usage` 섹션 ·
+  <a href="#how-it-works">작동 방식</a>
+</p>
+
+<p align="center">
+  <b>영어</b> ·
+  <a href="docs/ru/README.md">러시아어</a> ·
+  <a href="docs/zh/README.md">간단한 중국어</a> ·
+  <a href="docs/zh-TW/README.md">繁體中文</a> ·
+  <a href="docs/ja/README.md">일본어</a> ·
+  <a href="docs/ko/README.md">한국어</a> ·
+  <a href="docs/de/README.md">독일어</a> ·
+  <a href="docs/fr/README.md">프랑스어</a> ·
+  <a href="docs/es/README.md">스페인어</a> ·
+  <a href="docs/it/README.md">이탈리아어</a> ·
+  <a href="docs/pt-BR/README.md">포르투갈어</a> ·
+  <a href="docs/tr/README.md">터키어</a> ·
+  <a href="docs/uk/README.md">우크라이나어</a> ·
+  <a href="docs/pl/README.md">폴란드어</a>
+</p>
+
 로컬 `llama.cpp` 서버(`llama-server`)를 사용하여 **Project Zomboid (Build 42.15 이상)** 모드를 현지화하는 CLI 도구. **TranslateGemma** 기반.
 
 Steam 워크숍 또는 로컬 모드 폴더에서 `Translate/EN/*.json` 파일을 검색하고, 번역량(줄 수 및 문자 수)을 추정하고, 누락되거나 업데이트된 문자열을 번역하며, 생성된 모든 번역을 로컬에 복사하여, 독립적인 번역 모드를 쉽게 패키징하거나 Steam 업데이트 후 파일을 복원할 수 있도록 합니다.
@@ -8,7 +33,7 @@ Steam 워크숍 또는 로컬 모드 폴더에서 `Translate/EN/*.json` 파일�
 
 ## 특징
 
-- **42.15+ 버전의 JSON 지원:** Project Zomboid B42.15+에서 사용되는 최신 `.json` 번역 형식을 지원합니다 (B42.15+의 기존 `.txt` 파일만 사용하는 모드는 스캔 시 안전하게 건너뜁니다).
+- **42.15+ 버전의 JSON 지원:** Project Zomboid B42.15+에서 사용되는 최신 `.json` 번역 형식을 지원합니다 (B42.15+의 기존 `.txt`만 사용하는 모드는 스캔 시 안전하게 건너뜁니다).
 - **풍부한 터미널 인터페이스:** `rich`를 사용하여 깔끔한 색상 테이블, 상태 배지, 그리고 경과 시간/남은 시간을 표시하는 실시간 진행 막대를 제공합니다.
 - **다국어 CLI (`i18n`):** 기본적으로 영어로 설정되며, 인터랙티브 시작 시 `cli_locales/*.json`에서 인터페이스 언어를 선택하도록 안내합니다.
 - **3 작동 모드:**
@@ -18,7 +43,7 @@ Steam 워크숍 또는 로컬 모드 폴더에서 `Translate/EN/*.json` 파일�
 - **업데이트 감지 및 진행 상황 추적:** 소스 영어 문자열의 각 키에 대한 SHA-1 해시를 `pz_translator_state.json`에 저장합니다. Steam Workshop에서 업데이트가 발생하면, 새로 추가되거나 수정된 영어 키만 번역 대기 목록에 추가됩니다.
 - **로컬 미러 (`pz_translator_mods/`):** 번역된 모든 파일의 복사본을 저장하고, 상대적인 디렉토리 구조를 유지하여 (독립적인 번역 모드를 쉽게 만들 수 있도록 함).
 - **안전하고, 오류에 강함:**
-  - 기존 저자 번역에 대해 `0`개의 처리 중인 키가 있는 경우, 해당 번역은 변경되지 않거나 추적되지 않습니다.
+  - 기존 저자 번역에 `0`개의 처리되지 않은 키가 있는 경우, 해당 번역은 변경되거나 추적되지 않습니다.
   - UTF-8 BOM, 수동으로 편집한 mod JSON 파일의 꼬리 쉼표, 그리고 `$schema`와 빈 문자열을 처리합니다.
   - 자동으로 주기적으로 진행 상황을 저장합니다 (`save_every`) 및 `Ctrl+C` 키를 누를 때 저장합니다.
 
@@ -57,7 +82,7 @@ pip install -r requirements.txt
 | 핵 | 설명 |
 | --- | --- |
 | `llamacpp_host` | 현재 실행 중인 `llama-server`의 호스트 주소 |
-| `llamacpp_port` | `llama-server` 실행 포트 |
+| `llamacpp_port` | 실행 중인 `llama-server`의 포트 |
 | `mods_path` | 모드 2에서 기본 루트 디렉터리 스캔 (예: Steam 워크숍 `108600` 폴더) |
 | `default_source_lang` | 소스 번역 폴더 이름 (기본값: `EN`) |
 | `default_target_lang` | 기본 대상 언어 코드 (예: `RU`, `DE`, `CN`, `JP`, `PTBR`) |
@@ -79,7 +104,7 @@ python pz_translate.py
 ```
 
 1. **인터페이스 언어 선택:** `cli_locales/`에 있는 사용 가능한 언어 중에서 선택하세요 (기본값: `en`).
-2. **모드 선택:**
+2. **선택 모드:**
    - `1` — 특정 모드 경로 번역
    - `2` — `mods_path` 내의 모든 모드를 스캔하고, 문자/문자 개수를 보여주는 테이블을 확인하고, 모드 번호를 입력합니다 (예: `1,3,5`, `1-4`, 또는 `모든`).
    - `3` — 저장된 진행 상황 관리 (변경/새로운 키 업데이트, 처음부터 다시 번역, `pz_translator_mods/`에서 복원, 번역 삭제)
@@ -90,7 +115,7 @@ python pz_translate.py
 
 CLI 플래그를 사용하여 대화형 메뉴를 우회할 수 있습니다 (CLI 인수는 `config.json`을 덮어씁니다):
 
-| 플래그 | 설명 |
+| 깃발 | 설명 |
 | --- | --- |
 | `--config <경로>` | 사용자 정의 `config.json` 파일의 경로 |
 | `--mode {1, 2, 3}` | `1` = 단일 모드, `2` = 디렉토리 스캔, `3` = 저장된 진행 상황 관리 |
@@ -122,7 +147,7 @@ python pz_translate.py --mode 3
 
 ## 작동 방식
 
-1. **모드 검색:** `Translate/<SOURCE_LANG>` 디렉터리 내에 있는 `.json` 파일을 재귀적으로 검색하고, `mod.info` 및 워크숍 폴더 구조(`mods/<ModName>/<Version>`)에서 모드 이름을 추출합니다.
+1. **모드 탐색:** `Translate/<SOURCE_LANG>` 디렉터리 내에 있는 `.json` 파일을 재귀적으로 검색하고, `mod.info` 및 워크숍 폴더 구조(`mods/<ModName>/<Version>`)에서 모드 이름을 추출합니다.
 2. **차이 및 볼륨 추정:** `EN/*.json` 파일의 키를 기존 대상 파일(`<TARGET_LANG>/*.json`) 및 `pz_translator_state.json`에 저장된 SHA-1 해시와 비교합니다. 누락된 키 또는 마지막 번역 이후 영어 원본 텍스트가 변경된 키만 큐에 추가됩니다.
 3. **LLM 번역:** `TranslateGemma` 채팅 턴 형식으로 각 문자열을 `http://<호스트>:<포트>/completion`으로 전송합니다.
 4. **듀얼 출력:** `save_every` 키(및 완료 또는 `Ctrl+C` 시)에 유효한 UTF-8 JSON을 다음 위치에 기록합니다:
