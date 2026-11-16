@@ -208,7 +208,11 @@ class I18n:
             try:
                 return template.format(**kwargs)
             except Exception:
-                return template
+                fallback = DEFAULT_EN_UI.get(key, template)
+                try:
+                    return fallback.format(**kwargs)
+                except Exception:
+                    return template
         return template
 
 
@@ -1052,7 +1056,7 @@ def run_mode_2(
     state = load_state(settings.state_file)
 
     table = Table(
-        title=i18n.t("found_targets_header", count=len(targets)),
+        title=i18n.t("found_targets_header", source_lang=settings.default_source_lang, count=len(targets)),
         box=box.ROUNDED,
         header_style="bold cyan",
     )
