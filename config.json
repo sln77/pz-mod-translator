@@ -1,0 +1,11 @@
+{
+    "llamacpp_host": "127.0.0.1",
+    "llamacpp_port": 5001,
+    "mods_path": "Z:\\steam\\steamapps\\workshop\\content\\108600",
+    "default_source_lang": "EN",
+    "default_target_lang": "RU",
+    "ui_lang": "en",
+    "mirror_dir": "pz_translator_mods",
+    "state_file": "pz_translator_state.json",
+    "save_every": 20
+}

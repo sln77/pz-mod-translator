@@ -1,0 +1,12 @@
+# Local state and generated mod copies
+/pz_translator_mods/
+/pz_translator_state.json
+/pz_translator_state.tmp
+/dev_translate_project.py
+
+# Temporary dev translation script (do not publish)
+dev_translate_project.py
+
+# Python
+__pycache__/
+*.py[cod]
