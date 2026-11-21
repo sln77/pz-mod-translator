@@ -1,11 +1,19 @@
-# Local state and generated mod copies
+# Local state, logs, reports, and generated mod copies
 /pz_translator_mods/
 /pz_translator_state.json
 /pz_translator_state.tmp
-/dev_translate_project.py
+/pz_translator_issues.log
+/pz_translator_check_report.txt
 
-# Temporary dev translation script (do not publish)
-dev_translate_project.py
+# Temporary dev scripts/files (do not publish)
+/dev_translate_project.py
+/scan_tokens.py
+/scan_tokens_report.txt
+/pz_translator_mods_three.md
+/bench_prompts.py
+/bench_report.txt
+/bench_short.txt
+/generate_tree.bat
 
 # Python
 __pycache__/

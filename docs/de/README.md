@@ -1,57 +1,33 @@
-# Projekt Zomboid Mod Übersetzer
+# Übersetzer für den Project Zomboid Mod
 
-<p align="center">
-  <a href="#features">Funktionen</a> ·
-  <a href="#requirements">Anforderungen</a> ·
-  <a href="#configuration-configjson">Konfiguration</a> ·
-  <a href="#usage">Verwendung</a> ·
-  <a href="#how-it-works">Wie es funktioniert</a>
-</p>
+Ein Kommandozeilen-Tool zur Lokalisierung von **Project Zomboid (Version 42.15+)** Mods unter Verwendung eines lokalen `llama.cpp`-Servers (`llama-server`), der von **TranslateGemma** betrieben wird.
 
-<p align="center">
-  <b>Englisch</b> ·
-  <a href="docs/ru/README.md">Русский</a> ·
-  <a href="docs/zh/README.md">简体中文</a> ·
-  <a href="docs/zh-TW/README.md">繁體中文</a> ·
-  <a href="docs/ja/README.md">日本語</a> ·
-  <a href="docs/ko/README.md">한국어</a> ·
-  <a href="docs/de/README.md">Deutsch</a> ·
-  <a href="docs/fr/README.md">Französisch</a> ·
-  <a href="docs/es/README.md">Español</a> ·
-  <a href="docs/it/README.md">Italienisch</a> ·
-  <a href="docs/pt-BR/README.md">Português</a> ·
-  <a href="docs/tr/README.md">Türkçe</a> ·
-  <a href="docs/uk/README.md">Українська</a> ·
-  <a href="docs/pl/README.md">Polnisch</a>
-</p>
-
-Ein CLI-Tool zur Lokalisierung von **Project Zomboid (Build 42.15+)** Mods unter Verwendung eines lokalen `llama.cpp`-Servers (`llama-server`), der von **TranslateGemma** betrieben wird.
-
-Es scannt den Steam Workshop oder lokale Mod-Ordner nach Dateien vom Typ `Translate/EN/*.json`, schätzt die Übersetzungsvolumen (Anzahl der Zeilen und Zeichen), übersetzt fehlende oder aktualisierte Zeichenketten und speichert jede generierte Übersetzung lokal, sodass Sie Übersetzungs-Mods einfach als eigenständige Pakete erstellen oder Dateien nach Steam-Updates wiederherstellen können.
+Es durchsucht den Steam Workshop oder lokale Mod-Ordner nach Dateien mit der Erweiterung `Translate/EN/*.json`, schätzt die Übersetzungsvolumen (Anzahl der Zeilen und Zeichen), übersetzt fehlende oder aktualisierte Texte, validiert Variablen und UI-Markup-Tags und speichert jede generierte Übersetzung lokal, sodass Sie problemlos eigenständige Übersetzungsmodifikationen erstellen oder Dateien nach Steam-Updates wiederherstellen können.
 
 ---
 
-## Funktionen
+## Eigenschaften
 
-- **Unterstützung für JSON-Format (Version 42.15+):** Funktioniert mit dem modernen `.json`-Übersetzungsformat, das in Project Zomboid B42.15+ verwendet wird (alte `.txt`-basierte Mods werden während des Scans sicher übersprungen).
-- **Reichhaltige Terminal-Schnittstelle:** Saubere, farbige Tabellen, Status-Badges und dynamische Fortschrittsbalken mit vergangenem/verbleibendem Zeit, mithilfe von `rich`.
-- **Mehrsprachige Befehlszeilenschnittstelle (`i18n`):** Standardmäßig auf Englisch eingestellt und beim interaktiven Start zur Auswahl der Benutzersprache aus `cli_locales/*.json` aufgefordert.
+- **Unterstützung für JSON-Dateien (Version 42.15+):** Funktioniert mit dem modernen `.json`-Format, das in Project Zomboid B42.15+ verwendet wird (alte `.txt`-basierte Mods werden während der Scans sicher übersprungen).
+- **Reichhaltige Terminal-Schnittstelle:** Saubere, farbige Tabellen, Status-Symbole und dynamische Fortschrittsbalken mit verbleibender/vergangener Zeit, basierend auf der `rich`-Bibliothek.
+- **Mehrsprachige Kommandozeile (`i18n`):** Standardmäßig auf Englisch eingestellt und bietet bei interaktivem Start die Möglichkeit, die Benutzersprache aus `cli_locales/*.json` auszuwählen.
 - **3 Betriebsmodi:**
   - **Modus 1:** Übersetzen Sie ein einzelnes, angegebenes Mod (oder seinen `Translate` / `EN`-Ordner).
-  - **Modus 2:** Scannen Sie das gesamte Workshop-Verzeichnis, überprüfen Sie den Übersetzungsstatus und das Zeichenvolumen pro Mod, und wählen Sie Module anhand von Nummern (`1,3,5`), Bereichen (`1-4`) oder `alle` aus.
-  - **Modus 3:** Verwaltung gespeicherter Fortschritte – Erkennen von Mod-Updates, Übersetzung nur neuer/geänderter Strings, Überschreiben von Grund auf, Wiederherstellung von einem Spiegel, oder sauberes Löschen generierter Dateien.
-- **Erkennung von Aktualisierungen und Fortschrittsverfolgung:** Speichert SHA-1-Hashes der ursprünglichen englischen Zeichenketten pro Schlüssel in `pz_translator_state.json`. Wenn eine Mod-Aktualisierung im Steam Workshop erfolgt, werden nur neu hinzugefügte oder geänderte englische Schlüssel für die Übersetzung in die Warteschlange gestellt.
-- **Lokales Spiegelbild (`pz_translator_mods/`):** Speichert eine Kopie jeder übersetzten Datei und bewahrt die relative Verzeichnisstruktur (was die Erstellung eigenständiger Modifikationen, die nur Übersetzungen enthalten, erleichtert).
-- **Sicher und fehlertolerant:**
-  - Vorhandene Übersetzungen von Autoren mit `0` ausstehenden Schlüsseln werden niemals verändert, überschrieben oder verfolgt.
-  - Behandelt UTF-8-BOM, nachgestellte Kommas in von Hand bearbeiteten Mod-JSONs und bewahrt `$schema` und leere Strings.
-  - Automatische Speicherung des Fortschritts periodisch (`save_every`) und bei `Ctrl+C`.
+  - **Modus 2:** Scannen Sie das gesamte Verzeichnis Ihres Arbeitsbereichs, überprüfen Sie den Status der Übersetzungen und die Anzahl der Zeichen pro Modul, und wählen Sie Module anhand von Nummern (`1,3,5`), Bereichen (`1-4`) oder `all` aus.
+  - **Modus 3:** Verwaltung gespeicherter Fortschritte – Erkennen von Mod-Updates, Übersetzung neuer/geänderter/fehlerhafter Token-Strings, Neuaufbau von Grund auf, Wiederherstellung aus einem Spiegel, sauberes Löschen generierter Dateien oder Ausführen eines Berichts zur Überprüfung der Token-Funktionalität.
+- **Platzhalter und Markup-Validierung (`token_rules.json`):** Extrahiert Mod-Platzhalter (`{name}`, `%1`) und Project Zomboid RichText-Tags (`<LINE>`, `<RGB:...>`, `<IMAGE:...>`, usw.) mithilfe konfigurierbarer regulären Ausdrücke und überprüft eine exakte Übereinstimmung nach der Übersetzung. Bei einer Diskrepanz werden alternative Versuche mit unterschiedlichen Seeds (`max_retries`) durchgeführt. Wenn alle Versuche fehlschlagen, behält die ursprüngliche englische Zeichenkette, kennzeichnet den Mod-Status als `EN/<LANG>`, und protokolliert Details in `pz_translator_issues.log`.
+- **Erkennung von Aktualisierungen und Fortschrittsverfolgung:** Speichert SHA-1-Hashes der ursprünglichen englischen Zeichenketten pro Schlüssel in der Datei `pz_translator_state.json`. Wenn eine Mod-Aktualisierung im Steam Workshop erfolgt, werden nur neu hinzugefügte, geänderte oder fehlerhafte Schlüssel für die Übersetzung in eine Warteschlange gestellt.
+- **Lokales Spiegelbild (`pz_translator_mods/`):** Speichert eine Kopie jeder übersetzten Datei und bewahrt dabei die relative Verzeichnisstruktur (was die Erstellung von eigenständigen Modulen erleichtert, die ausschließlich für die Übersetzung verwendet werden).
+- **Sicher und fehlerverträglich:**
+  - Vorhandene Übersetzungen von Autoren (sowohl unveränderte Mods als auch individuelle Übersetzungen, die nicht in der Datei `pz_translator_state.json` erfasst werden), werden niemals von Token-Regeln analysiert, verändert oder überschrieben.
+  - Unterstützt die UTF-8-Byte-Order-Marke, abschließende Kommas in handbearbeiteten Mod-JSON-Dateien und bewahrt die `$schema`-Angabe sowie leere Zeichenketten.
+  - Die automatische Speicherung erfolgt periodisch (`save_every`) und zusätzlich bei `Ctrl+C`.
 
 ---
 
 ## Anforderungen
 
-- **Python 3.9+**
+- **Python 3.9 oder höher**
 - **llama.cpp** (`llama-server`), das ein **TranslateGemma** GGUF-Modell auf dem konfigurierten Host/Port ausführt (Standard: `http://127.0.0.1:8734`).
 - Python-Abhängigkeiten:
 
@@ -75,21 +51,37 @@ Beim ersten Ausführen (oder über die mitgelieferte `config.json`-Datei) verwen
     "ui_lang": "en",
     "mirror_dir": "pz_translator_mods",
     "state_file": "pz_translator_state.json",
+    "token_rules_file": "token_rules.json",
     "save_every": 20
 }
 ```
 
 | Schlüssel | Beschreibung |
 | --- | --- |
-| `llamacpp_host` | IP-Adresse des laufenden `llama-server` |
-| `llamacpp_port` | Port Ihres laufenden `llama-server` |
-| `mods_path` | Standard-Wurzelverzeichnis wird im Modus 2 gescannt (z. B. Ordner `108600` im Steam Workshop). |
-| `default_source_lang` | Name des Ordners für die Quelübersetzung (Standard: `EN`) |
-| `default_target_lang` | Standard-Ziel-Sprachcode (z. B. `RU`, `DE`, `CN`, `JP`, `PTBR`) |
-| `ui_lang` | Standard-Sprachcode für die Benutzeroberfläche aus `cli_locales/` |
-| `mirror_dir` | Lokaler Ordner, in dem vollständige Pfad-Kopien der generierten Übersetzungen gespeichert werden. |
-| `state_file` | JSON-Datei, die die Übersetzungsgeschichte und Hash-Werte der ursprünglichen Strings speichert |
-| `save_every` | Speichern des Fortschritts auf der Festplatte und Spiegeln aller N übersetzten Schlüssel |
+| `llamacpp_host` | Adresse des Servers, auf dem Ihr `llama-server` läuft |
+| `llamacpp_port` | Starten Sie Ihren `llama-server`. |
+| `mods_path` | Standard-Wurzelverzeichnis wird im Modus 2 gescannt (z. B. das Verzeichnis `108600` im Steam Workshop). |
+| `default_source_lang` | Name des Ordners für die Quelldateien (Standard: `EN`) |
+| `default_target_lang` | Standard-Sprachcode (z.B. `RU`, `DE`, `CN`, `JP`, `PTBR`) |
+| `ui_lang` | Standard-Sprachcode für die Benutzeroberfläche aus dem Verzeichnis `cli_locales/` |
+| `mirror_dir` | Lokales Verzeichnis, in dem vollständige Pfad-Kopien der generierten Übersetzungen gespeichert werden. |
+| `state_file` | JSON-Datei, die die Übersetzungsgeschichte und die Hashes der ursprünglichen Zeichenketten speichert |
+| `token_rules_file` | JSON-Datei mit regulären Ausdrücken und Einstellungen für Wiederholungsversuche zur Validierung von Platzhaltern/Tags |
+| `save_every` | Fortschritt speichern auf der Festplatte und alle N übersetzten Schlüssel synchronisieren. |
+
+### Token-Validierung (`token_rules.json`)
+
+Reguläre Ausdrücke zur Absicherung dynamischer Variablen und Projekt Zomboid-Markup-Tags sind in der Datei `token_rules.json` konfiguriert:
+
+| Schlüssel | Beschreibung |
+| --- | --- |
+| `max_retries` | Maximale Anzahl an Übersetzungsversuchen mit unterschiedlichen Startwerten, wenn wichtige Token nicht übereinstimmen. |
+| `retry_temperatures` | Temperaturschema wird für alle Wiederholungsversuche angewendet (z.B. `[0.2, 0.35, 0.5]`) |
+| `issues_log` | Protokolldatei, in der Zeichen, die nach allen Wiederholungsversuchen die Validierung nicht bestanden haben, zusammen mit ihrer Quelle `EN` und den fehlgeschlagenen Versuchen, aufgezeichnet werden. |
+| `check_report` | Ausgabedatei für den Bericht zur Überprüfung von Token im Modus 3 |
+| `rules` | Eine Sammlung von Regex-Regelobjekten (mit den Attributen `name`, `pattern`, `enabled`, `critical` und `description`) |
+
+Regeln, die mit `"critical": true` gekennzeichnet sind, lösen während der Übersetzung Wiederholungsversuche aus und protokollieren Schlüssel, die für eine erneute Übersetzung bei Updates benötigt werden. Nicht-kritische Regeln (`"critical": false`) werden nur im Bericht der Testlauf-Überprüfung als Warnungen angezeigt.
 
 ---
 
@@ -97,35 +89,37 @@ Beim ersten Ausführen (oder über die mitgelieferte `config.json`-Datei) verwen
 
 ### Interaktiver Modus
 
-Beginnen Sie zuerst mit dem Start von `llama-server`, und führen Sie dann aus:
+Beginnen Sie zuerst mit dem Starten von `llama-server`, und anschließend führen Sie folgenden Befehl aus:
 
 ```bash
 python pz_translate.py
 ```
 
-1. **Auswahl der Benutzersprache:** Wählen Sie aus den verfügbaren Sprachen in `cli_locales/` (Standard: `en`).
+1. **Auswahl der Benutzerschnittstellen-Sprache:** Wählen Sie aus den verfügbaren Sprachen im Verzeichnis `cli_locales/` (Standard: `en`).
 2. **Auswahlmodus:**
-   - `1` — Übersetzen eines bestimmten Mod-Pfads.
-   - `2` – Alle Mods im `mods_path` scannen, die Tabelle mit Zeichen-/Zeichenanzahl anzeigen und Mod-Nummern eingeben (z.B. `1,3,5`, `1-4` oder `alle`).
-   - `3` — Verwaltung gespeicherter Fortschritte (aktualisieren von geänderten/neuen Schlüsseln, erneutes Übersetzen von Grund auf, Wiederherstellen aus `pz_translator_mods/`, oder Löschen von Übersetzungen).
-   - `4` — Sprache der Benutzeroberfläche ändern.
-   - `0` — Beenden.
+   - `1` – Eine bestimmte Mod-Pfad übersetzen.
+   - `2` – Alle Mods in `mods_path` scannen, die Tabelle mit Zeichen-/Zeichenanzahl anzeigen und die Mod-Nummern eingeben (z.B. `1,3,5`, `1-4` oder `all`).
+   - `3` – Verwaltung gespeicherter Fortschritte (Aktualisierung neuer/geänderter/fehlerhafter Token-Schlüssel, Neubearbeitung von Grund auf, Wiederherstellung aus `pz_translator_mods/`, Löschen von Übersetzungen oder Ausführen eines Testberichts zur Token-Prüfung).
+   - `4` – Sprache der Benutzeroberfläche ändern.
+   - `0` – Beenden.
 
 ### Kommandozeilenargumente
 
-Sie können das interaktive Menü mithilfe von Befehlszeilen-Flags (CLI-Argumente überschreiben `config.json`):
+Sie können das interaktive Menü mithilfe von Befehlszeilenargumenten (CLI-Argumente überschreiben die `config.json`-Datei) umgehen.
 
 | Flagge | Beschreibung |
 | --- | --- |
-| `--config <Pfad>` | Pfad zu einer benutzerdefinierten `config.json`-Datei |
-| `--mode {1, 2, 3}` | `1` = einzelner Modus, `2` = Verzeichnis scannen, `3` = gespeicherten Fortschritt verwalten |
-| `--path <Pfad>` | Pfad zu einem Mod-Ordner (Modus 1) oder zum Stammordner für Mods (Modus 2) |
+| `--config <path>` | Der Weg zu einer benutzerdefinierten `config.json`-Datei |
+| `--rules <path>` | Der Weg zu einer benutzerdefinierten `token_rules.json`-Datei |
+| `--mode {1,2,3}` | `1` = Einzelne Modus, `2` = Verzeichnis scannen, `3` = gespeicherten Fortschritt verwalten |
+| `--path <path>` | Pfad zum Mod-Ordner (Modus 1) oder zum Stammordner für Mods (Modus 2) |
 | `--lang <code>` | Zielsprache als PZ-Ordnercode (`RU`, `CN`, `PTBR`) oder ISO-Code (`ru`, `zh`, `pt-BR`) |
-| `--source-lang <code>` | Überschreiben des Quell-Sprach-Ordners (Standard: `EN`) |
+| `--source-lang <code>` | Überschreiben des Quell-Sprachordners (Standard: `EN`) |
 | `--host <host>` | Überschreiben von `llamacpp_host` |
 | `--port <port>` | Überschreiben von `llamacpp_port` |
-| `--ui-lang <code>` | Sprachcode der Schnittstelle (z.B. `en`, `ru`) |
-| `--force` | Überschreiben bereits vorhandene Übersetzungen |
+| `--ui-lang <code>` | Sprachcode der Benutzeroberfläche (z. B. `en`, `ru`) |
+| `--force` | Vorhandene Übersetzungen überschreiben |
+| `--check` | Führen Sie eine Testprüfung aller gespeicherten Übersetzungen durch und erstellen Sie eine Datei namens `pz_translator_check_report.txt`. |
 
 #### Beispiele
 
@@ -141,23 +135,25 @@ python pz_translate.py --mode 2 --lang RU --ui-lang ru --port 8734
 
 # Open the progress manager
 python pz_translate.py --mode 3
+
+# Run a dry-run token check on all saved translations without calling the LLM
+python pz_translate.py --mode 3 --check
 ```
 
 ---
 
 ## Wie es funktioniert
 
-1. **Mod-Entdeckung:** Durchsucht rekursiv Verzeichnisse vom Typ `Translate/<SOURCE_LANG>`, die `.json`-Dateien enthalten, und extrahiert Mod-Namen aus den `mod.info`-Dateien und den Verzeichnisstrukturen des Workshop-Ordners (`mods/<ModName>/<Version>`).
-2. **Differenz und Volumenabschätzung:** Vergleicht Schlüssel in `EN/*.json` mit vorhandenen Zieldateien (`<TARGET_LANG>/*.json`) und gespeicherten SHA-1-Hashes in `pz_translator_state.json`. Nur fehlende Schlüssel oder Schlüssel, deren englischer Quelltext seit der letzten Übersetzung geändert wurde, werden in die Warteschlange gestellt.
-3. **Übersetzung mit LLM:** Sendet jeden String an `http://<host>:<port>/completion` unter Verwendung des Formats für den Chat-Dialog von TranslateGemma.
-4. **Dualer Ausgab:** Jeder `save_every`-Schlüssel (und bei Abschluss oder `Ctrl+C`) schreibt gültiges UTF-8-JSON an:
-   - Das Zielverzeichnis für die Mod-Datei: `...\Translate\<LANG>\<file>.json`
-   - Das lokale Mirror-Ordner: `pz_translator_mods\<vollständiger_Pfad_ohne_laufwerksbuchstabe>\Translate\<LANG>\<Datei>.json`
+1. **Mod-Entdeckung:** Durchsucht rekursiv Verzeichnisse vom Typ `Translate/<SOURCE_LANG>`, die `.json`-Dateien enthalten, und extrahiert Mod-Namen aus den Dateien `mod.info` und den Ordnerstrukturen des Workshop-Verzeichnisses (`mods/<ModName>/<Version>`).
+2. **Vergleich und Volumenabschätzung:** Vergleicht die Schlüssel in `EN/*.json` mit vorhandenen Zieldateien (`<TARGET_LANG>/*.json`), gespeicherten SHA-1-Hashes in `pz_translator_state.json` und wichtigen Regeln aus `token_rules.json`. Fehlende Schlüssel, Schlüssel, deren englischer Quelltext geändert wurde, und verfolgte Schlüssel mit fehlerhaften Platzhaltern/Tags werden für die Übersetzung in eine Warteschlange gestellt; bereits vorhandene Übersetzungen von Autoren bleiben unverändert.
+3. **Übersetzung und Validierung von LLMs:** Sendet jede vollständige Originalzeichenkette an `http://<host>:<port>/completion` unter Verwendung des standardisierten TranslateGemma-Prompts, und prüft anschließend kritische Token auf Übereinstimmung mit der Originalzeichenkette. Bei einer Diskrepanz werden bis zu `max_retries` verschiedene Seeds verwendet. Wenn alle Versuche fehlschlagen, behält das System den englischen Text, markiert den Modifizierungsstatus als `EN/<LANG>`, und protokolliert die Details in `pz_translator_issues.log`.
+4. **Dualer Ausgabemodus:** Jeder `save_every`-Schlüssel (und bei Abschluss oder `Ctrl+C`) schreibt gültiges UTF-8-JSON in:
+   - Das Zielverzeichnis für die Mod-Dateien: `...\Translate\<LANG>\<file>.json`
+   - Das lokale Spiegelverzeichnis: `pz_translator_mods\<full_path_without_drive_letter>\Translate\<LANG>\<file>.json`
 
 ---
 
-## Hinweise & Einschränkungen
+## Anmerkungen und Einschränkungen
 
-- **Unterstütztes Format:** Nur die `.json`-Lokalisierungsdateien von Project Zomboid **Build 42.15+** werden verarbeitet. Alte `.txt`-Übersetzungsdateien werden ignoriert, da B42.15+ sie nicht mehr lädt.
-- **Mehrspieler (`DoLuaChecksum`):** Da die `Translate`-Ordner sich innerhalb von `media/lua/shared/` befinden, kann das direkte Hinzufügen von Übersetzungsdateien in die Steam Workshop-Ordner zu Inkonsistenzen bei den Checksummen auf Mehrspielerservern mit `DoLuaChecksum=true` führen. Für öffentliche Mehrspielerserver: Entweder die spiegelnden Dateien aus `pz_translator_mods/` als separate Mod, die nur Übersetzungen enthält, verpacken, oder im Einzelspieler-/Server-Modus mit `DoLuaChecksum=false` spielen.
-```
+- **Unterstützte Dateiformat:** Nur die `.json`-Dateien für die Lokalisierung von Project Zomboid **Build 42.15+** werden verarbeitet. Ältere `.txt`-Dateien für Übersetzungen werden ignoriert, da B42.15+ diese nicht mehr lädt.
+- **Mehrspieler (`DoLuaChecksum`):** Da die Ordner `Translate` sich innerhalb von `media/lua/shared/` befinden, kann das direkte Hinzufügen von Übersetzungsdateien in die Steam Workshop-Ordner zu Inkonsistenzen bei der Überprüfung der Checksummen auf Mehrspielerservern mit `DoLuaChecksum=true` führen. Für öffentliche Mehrspielerserver sollte entweder eine separate Mod erstellt werden, die die spiegelnden Dateien aus `pz_translator_mods/` enthält, oder im Einzelspieler- / Server-Modus mit `DoLuaChecksum=false` gespielt werden.

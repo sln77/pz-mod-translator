@@ -1,0 +1,36 @@
+{
+    "max_retries": 3,
+    "retry_temperatures": [0.2, 0.35, 0.5],
+    "issues_log": "pz_translator_issues.log",
+    "check_report": "pz_translator_check_report.txt",
+    "rules": [
+        {
+            "name": "curly_placeholders",
+            "pattern": "\\{[^{}\\r\\n]{1,64}\\}",
+            "enabled": true,
+            "critical": true,
+            "description": "Mod variables like {name}, {page}, {count}"
+        },
+        {
+            "name": "pz_percent_args",
+            "pattern": "%\\d+",
+            "enabled": true,
+            "critical": true,
+            "description": "PZ getText positional arguments like %1, %2"
+        },
+        {
+            "name": "pz_richtext_tags",
+            "pattern": "<(?:LINE|BR|br|H[1-6]|TEXT|LEFT|RIGHT|CENTRE|CENTER|SPACE|GREEN|RED|ORANGE|BLUE|YELLOW|WHITE|GRAY|GREY|(?:RGB|INDENT|SETX|SETY|SIZE|IMAGE|IMAGECENTRE|JOYPAD):[^<>\\r\\n]+)>",
+            "enabled": true,
+            "critical": true,
+            "description": "PZ RichText UI tags"
+        },
+        {
+            "name": "line_breaks",
+            "pattern": "\\n|\\\\\\\\n|\\t",
+            "enabled": true,
+            "critical": false,
+            "description": "Newlines and tabs (non-critical, shown only in dry-run check)"
+        }
+    ]
+}
